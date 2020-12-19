@@ -51,8 +51,8 @@ read_avia_par <- function(data,first_year=2015,freq_data="Q",unit="PAS",arr_dep=
   avia_par_country <- avia_par_country[avia_par_country$tra_meas %in% var_select,]
   #Numerical 
   avia_par_country[,-1:-6] <- as.numeric(as.matrix(avia_par_country[,-1:-6]))
-  #Remove entirely empty rows
-  avia_par_country <- avia_par_country[rowSums(is.na(avia_par_country[,-1:-6])) != ncol(avia_par_country[,-1:-6]),]
+  #Remove entirely empty rows -> 
+  #avia_par_country <- avia_par_country[rowSums(is.na(avia_par_country[,-1:-6])) != ncol(avia_par_country[,-1:-6]),]
 
 #4 Passage toward list of matrices, with each a different data type (ex:Arrival of Passenger Carried)
   #CAF_PAS = Commercial Passenger Air Flights
@@ -65,5 +65,6 @@ read_avia_par <- function(data,first_year=2015,freq_data="Q",unit="PAS",arr_dep=
   options(warn = oldw)
   return(avia_par_country)
 }
+
 
   
