@@ -1,11 +1,3 @@
-#Libraries
-library(readr)
-library(tidyr)
-library(dplyr)
-#Load data directory
-setwd("C:/Users/colle/Documents/R/co2aviation/Data/Eurostat")
-#Parameters of the database taken from Eurostat
-
 ####### With full datasets ###########
 read_avia_par <- function(data,first_year=2015,freq_data="Q",unit="PAS",arr_dep="DEP"){
   oldw <- getOption("warn")
@@ -62,9 +54,25 @@ read_avia_par <- function(data,first_year=2015,freq_data="Q",unit="PAS",arr_dep=
                           sep="_",
                           into=c("data_type","data-type_2","arr_dep"))
   avia_par_country <- avia_par_country[avia_par_country$arr_dep==arr_dep & avia_par_country$unit==unit,]
+  avia_par_country [is.na(avia_par_country)] = 0
   options(warn = oldw)
   return(avia_par_country)
 }
 
-
+####### Read list of files and aggregate into a dataframe
+read_avia_par_list <- function(files,unit ="PAS",arr_dep="DEP"){
+  avia_par_PAS_DEP <- lapply(files, function(x) {
+    read_avia_par(x,unit = unit,arr_dep=arr_dep)
+  })
+  names(avia_par_PAS_DEP) <- lapply(files, function(x) {str_sub(x,-6,-5)})
+  
+  ### Agregation into a single DF
+  PAS_DEP <- do.call("bind_rows",avia_par_PAS_DEP)
+  
+  ### Filter extra EU -> From 9384 to 7544 airports relation (one way)
+  PAS_DEP <- PAS_DEP[
+    PAS_DEP$dest_count %in%
+      levels(as.factor(PAS_DEP$orig_count)),]
+  return(PAS_DEP)
+}
   
