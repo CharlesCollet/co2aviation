@@ -25,10 +25,3 @@ airport_city <- data.frame(city=c("Brussels","Brussels",
                      "LIRF","LIRA"
                      )
            )
-
-
-base_par <- matrix_orig_dest(avia_par_PAS_DEP_filter,year=2017)
-table(substr(base_par$orig_airp,4,7) %in% airport_city$airport)["TRUE"]
-airport_same_city <- function(){
-  
-}

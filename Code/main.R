@@ -9,36 +9,36 @@ setwd("C:/Users/colle/Documents/R/co2aviation/Code")
 source("read_avia_par.R")
 source("read_avia_paocc.R")
 source("base_avia_comp.R")
+source("matrix_origin_dest.R")
 
 ###### Load data directory and read files name #####
 setwd("C:/Users/colle/Documents/R/co2aviation/Data/Eurostat/avia_par")
 files <- list.files(pattern="*.tsv", full.names=TRUE, recursive=FALSE)
 PAS_DEP <- read_avia_par_list(files,unit ="PAS",arr_dep ="DEP")
-
+PAS_ARR <- read_avia_par_list(files,unit ="PAS",arr_dep ="ARR")
 #Verification with database avia_paocc
-avia_paocc <- read_avia_paocc("C:/Users/colle/Documents/R/co2aviation/Data/Eurostat/avia_paocc/avia_paocc.tsv")
+avia_paocc_DEP <- read_avia_paocc("C:/Users/colle/Documents/R/co2aviation/Data/Eurostat/avia_paocc/avia_paocc.tsv",
+                                  unit ="PAS",arr_dep ="DEP")
+avia_paocc_ARR <- read_avia_paocc("C:/Users/colle/Documents/R/co2aviation/Data/Eurostat/avia_paocc/avia_paocc.tsv",
+                              unit = "PAS",arr_dep = "ARR")
 
-comparison <- base_avia_comp(PAS_DEP,avia_paocc,2017)
-sum(comparison[1,])/sum(comparison[2,])
+comparison_DEP <- base_avia_comp(PAS_DEP,avia_paocc_DEP,2017)
+comparison_ARR <- base_avia_comp(PAS_ARR,avia_paocc_ARR,2017)
+#Quick verification of the percentage of similarities
+sum(comparison_DEP[1,])/sum(comparison_DEP[2,])
+sum(comparison_ARR[1,])/sum(comparison_ARR[2,])
+#### WARNING: there is a problem in the database avia_paocc for arrivals within the same country
+# Example : For Flights Norway (N0) in 2017,
+#          Departure from Norway = 15 283 971 
+#  whereas Arrivals in Norway = 307 164
+# It maskes sense because the flights would be counted twice otherwise
+#Origin destination matrix on one year
 
-## Brouillon - data by year
-list <- levels(as.factor(avia_paocc$country_2))[c(-12:-14,-25,-26,-33)]
-avia_paocc_2017 <- avia_paocc[avia_paocc$country_2=="LV" & 
-                                avia_paocc$partner %in% list,c(1:6,18:21)]
-#Sum on the 4 trimesters of the yeear
-avia_paocc_2017 <- cbind(avia_paocc_2017[,1:6],avia_paocc_2017[,7:10] %>% transmute(y_2017=rowSums(.)))
+base_par <- matrix_orig_dest(PAS_DEP,year=2017)
+levels(factor(PAS_DEP$orig_count))
+levels(factor(PAS_DEP$orig_airp))
+levels(factor(PAS_DEP$dest_airp))
 
-#Test for a specific country
-avia_par_2017 <- PAS_DEP[PAS_DEP$orig_count =="LV" & 
-                                           PAS_DEP$dest_count %in% list,c(1:8,19:22)]
-avia_par_2017[,9:12] <- sapply(avia_par_2017[,9:12],as.numeric)
-avia_par_2017 <- cbind(avia_par_2017[,1:8],avia_par_2017[,9:12] %>% transmute(y_2017=rowSums(.)))
-
-sum(avia_par_2017$y_2017)
-sum(avia_paocc_2017$y_2017)
-
-sum(PAS_DEP[(PAS_DEP$orig_airp=="LFPG" & PAS_DEP$dest_airp=="LEBL") |
-                              (PAS_DEP$orig_airp=="LEBL" & PAS_DEP$dest_airp=="LFPG") 
-                            ,c("2017Q1","2017Q2","2017Q3","2017Q4")])
-
-#Traffic between 31 states 
+table(substr(base_par$orig_airp,4,7) %in% airport_city$airport)["TRUE"]
+airport_same_city <- function(){
+}

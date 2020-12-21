@@ -54,7 +54,7 @@ read_avia_par <- function(data,first_year=2015,freq_data="Q",unit="PAS",arr_dep=
                           sep="_",
                           into=c("data_type","data-type_2","arr_dep"))
   avia_par_country <- avia_par_country[avia_par_country$arr_dep==arr_dep & avia_par_country$unit==unit,]
-  avia_par_country [is.na(avia_par_country)] = 0
+  avia_par_country[is.na(avia_par_country)] = 0
   options(warn = oldw)
   return(avia_par_country)
 }
@@ -68,7 +68,7 @@ read_avia_par_list <- function(files,unit ="PAS",arr_dep="DEP"){
   
   ### Agregation into a single DF
   PAS_DEP <- do.call("bind_rows",avia_par_PAS_DEP)
-  
+  PAS_DEP[is.na(PAS_DEP)] = 0
   ### Filter extra EU -> From 9384 to 7544 airports relation (one way)
   PAS_DEP <- PAS_DEP[
     PAS_DEP$dest_count %in%

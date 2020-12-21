@@ -10,7 +10,7 @@ matrix_orig_dest <- function(base_par,year){
   base_par <- cbind(base_par[,1:2],base_par[,-1:-2] %>% transmute(rowSums(.)))
   colnames(base_par)[3] <- paste("year",year,sep="_")
   base_par <- arrange(base_par,orig_airp,dest_airp)
-  base_par <- base_par[base_par$year_2017!=0,]
+  # base_par <- base_par[base_par$year_2017!=0,]
   #From long to wide -> Matrix form
   base_par <- reshape(data=base_par,idvar="orig_airp",
                       v.names = "year_2017",

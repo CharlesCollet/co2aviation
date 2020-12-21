@@ -23,8 +23,10 @@ count_col_list <- function(list){
   return(list_col)
 }
 
-base_avia_comp <- function(base_par,base_paocc,year=2018){
+base_avia_comp <- function(base_par,base_paocc,year=2017){
   # 1st base, calculate nb passengers by country for a year
+   base_par=PAS_ARR
+   base_paocc=avia_paocc_ARR
   base_par <- base_par[,c(rep(TRUE,8),
                           #-1 to keep the first column with variable information
                           sapply(colnames(base_par)[-1:-8],
@@ -42,9 +44,10 @@ base_avia_comp <- function(base_par,base_paocc,year=2018){
                                      function(x){
                                        as.numeric(substr(x,1,4), 1, 4) == year
                                      }))]
-  list=levels(as.factor(base_paocc$country_2))[c(-12:-14,-25,-26,-33)]
+  list=levels(as.factor(base_paocc$orig_count))[c(-12:-14,-25,-26,-33)]
   S_paocc<- sapply(list,function(x){
-    sum(base_paocc[base_paocc$country_2==x & base_paocc$partner %in%  list,7:10])
+    sum(base_paocc[base_paocc$orig_count==x & base_paocc$dest_count %in%  list,7:10])
   })
+  # levels(factor(base_paocc$dest_count))
   return(rbind(S_par,S_paocc,S_par/S_paocc))
 }

@@ -44,7 +44,7 @@ read_avia_paocc <- function(data,first_year=2015,freq_data="Q",unit="PAS",arr_de
                                sep="_",
                                into=c("data_type","data-type_2","arr_dep"))
   avia_par_country <- avia_par_country[avia_par_country$arr_dep==arr_dep & avia_par_country$unit==unit,]
-  colnames(avia_par_country)[6] <-"country_2"
+  colnames(avia_par_country)[5:6] <-c("dest_count","orig_count")
   avia_par_country [is.na(avia_par_country)] = 0
   options(warn = oldw)
   return(avia_par_country)
