@@ -25,8 +25,6 @@ count_col_list <- function(list){
 
 base_avia_comp <- function(base_par,base_paocc,year=2017){
   # 1st base, calculate nb passengers by country for a year
-   base_par=PAS_ARR
-   base_paocc=avia_paocc_ARR
   base_par <- base_par[,c(rep(TRUE,8),
                           #-1 to keep the first column with variable information
                           sapply(colnames(base_par)[-1:-8],

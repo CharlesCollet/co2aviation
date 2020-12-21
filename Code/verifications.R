@@ -91,12 +91,12 @@ FR_comp_2017 <- comp_spec_country_year(PAS_DEP,avia_paocc_DEP,PAS_ARR,avia_paocc
     #  whereas Arrivals in Norway = 307 164
 # It maskes sense because the flights would be counted twice otherwise
 
-#Nombre de passager dans chacune des base
-sum(par_LV_2017[,9])
-sum(paocc_LV_2017[,7])
-#Il faut ensuite regarder les différences entre les 2 bases ligne à ligne
 
 #Test sur certains aéroports
 sum(PAS_DEP[(PAS_DEP$orig_airp=="LFPG" & PAS_DEP$dest_airp=="LEBL") |
               (PAS_DEP$orig_airp=="LEBL" & PAS_DEP$dest_airp=="LFPG") 
             ,c("2017Q1","2017Q2","2017Q3","2017Q4")])
+
+
+### Group airports in the same city
+airp
