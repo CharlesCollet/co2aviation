@@ -12,6 +12,7 @@ source("base_avia_comp.R")
 source("matrix_orig_dest.R")
 source("airport_same_city.R")
 
+
 ###### Load data directory and read files name #####
 setwd("C:/Users/colle/Documents/R/co2aviation/Data/Eurostat/avia_par")
 files <- list.files(pattern="*.tsv", full.names=TRUE, recursive=FALSE)
