@@ -10,6 +10,7 @@ source("read_avia_par.R")
 source("read_avia_paocc.R")
 source("base_avia_comp.R")
 source("matrix_orig_dest.R")
+source("airport_same_city.R")
 
 ###### Load data directory and read files name #####
 setwd("C:/Users/colle/Documents/R/co2aviation/Data/Eurostat/avia_par")
@@ -41,16 +42,6 @@ czech_PAS_ARR <- PAS_ARR[PAS_ARR$dest_count == "CZ",]
 czech_PAS_ARR[,5:8] <- czech_PAS_ARR[,c(7,8,5,6)]
 PAS_DEP <- rbind(PAS_DEP,czech_PAS_ARR)
 
-#Origin destination matrix on one year
-mat_orig_dest_DEP <- matrix_orig_dest(PAS_DEP,year=2017)
-
-###### Group airports in the same city ######
-
-table(substr(base_par$orig_airp,4,7) %in% airport_city$airport)["TRUE"]
-airport_city[!(airport_city$airport %in% substr(base_par$orig_airp,4,7)),]
-PAS_DEP[PAS_DEP$dest_airp=="EDHI",]
-PAS_DEP[PAS_DEP$orig_airp=="EDHI",]
-
 #Some airport are not in the origin list but only on the destination one
 #This is due to the "main declaring airports" and "main partners" selection by Eurostat:
 # An airport (ex: Hamburg Finkerwerder - EDHI) can be below the "main declaring airports" threshold of 150 000 passengers (by quarter ?)
@@ -59,10 +50,19 @@ PAS_DEP[PAS_DEP$orig_airp=="EDHI",]
 #  the number of passengers per quarter is above the threshold (Blagnac/Toulouse CCER - LFBO)
 # The consequence is that for these airports, only the flights from the "big" to the "small" airport are accounted in the DEPARTURE base
 # 2 solutions :
-#    1 - Eliminate all the airports that do not appear both in the origin and destination list
+#    1 - Eliminate all the airports that do not appear both in the origin and destination list -> solution chosen
 #    2 - Integrate these airports through the use of the ARRIVAL database
 
-#
-airport_same_city <- function(){
-}
+
+# Regroup airports from the same city
+PAS_DEP_city <- airport_same_city(PAS_DEP)
+
+
+mat_orig_dest_DEP <- matrix_orig_dest(PAS_DEP_city,year=2017,small_airports ="supress")
+#Share of passengers from flights with airports that appear only in origin or destination (small airports < threshold)
+#We suppress these flights to obtain a square matrix
+share_small_airports <- mat_orig_dest_DEP[[2]]
+#Origin destination matrix on one year
+mat_orig_dest_DEP <- mat_orig_dest_DEP[[1]]
+
 

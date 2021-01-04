@@ -8,9 +8,6 @@
 # 
 
 filter_year <- function(base_par,year){
-  # base_par=PAS_DEP
-  # year=2017
-  # small_airports="suppress"
   base_par$orig_airp <- paste(base_par$orig_count,base_par$orig_airp,sep="_")
   base_par$dest_airp <- paste(base_par$dest_count,base_par$dest_airp,sep="_")
   base_par <- base_par[,c(-1:-5,-7)]
@@ -23,33 +20,26 @@ filter_year <- function(base_par,year){
   return(base_par)
 }
 
-test <- filter_year(PAS_DEP,2017)
-test <- test[test$year_2017 !=0,]
-n_dest_pas_sup <- sum(test[!(test$dest_airp %in% test$orig_airp),3])
-test <- test[test$dest_airp %in% test$orig_airp,]
-n_orig_pas_sup <- sum(test[!(test$orig_airp %in% test$dest_airp),3])
-test <- test[test$orig_airp %in% test$dest_airp,]
-total_pas <- sum(test[,3])
-c(n_dest_pas_sup,n_orig_pas_sup,n_dest_pas_sup/total_pas ,n_orig_pas_sup/total_pas)
-#We suppress approximatively 0,6% of the passengers
-mat_orig_dest_DEP <- matrix_orig_dest(test,year=2017)
-# test_2 <- test_2[(substr(test_2$dest_airp,1,2) == "CZ") & test_2$year_2017 !=0,]
-sum(test[,3])
-sum(test_2[,3])
 
-matrix_orig_dest(test,year = 2017)
-matrix_orig_dest <- function(base_par,year,small_airports="suppress"){
-  # base_par <- test
-  # base_par <- filter_year(base_par,year)
-  # if(small_airports=="suppress"){
-  #   test <- base_par[!(base_par$dest_airp %in% base_par$orig_airp) & base_par$year_2017 !=0,]
-  #   base_par <- base_par[base_par$dest_airp %in% base_par$orig_airp,]
-  # }
-  # base_par <- base_par[base_par$year_2017!=0,]
+matrix_orig_dest <- function(base_par,year,small_airports="supress"){
+  base_par <- filter_year(base_par,year)
+  base_par <- base_par[base_par[,3] !=0,]
+  if(small_airports=="supress"){
+    test <- base_par[!(base_par$dest_airp %in% base_par$orig_airp),]
+    n_dest_pas_sup <- sum(base_par[!(base_par$dest_airp %in% base_par$orig_airp),3])
+    base_par <- base_par[base_par$dest_airp %in% base_par$orig_airp,]
+    n_orig_pas_sup <- sum(base_par[!(base_par$orig_airp %in% base_par$dest_airp),3])
+    base_par <- base_par[base_par$orig_airp %in% base_par$dest_airp,]
+    total_pas <- sum(base_par[,3])
+  }
+  # option small_airports = keep_all not implemented yet
   #From long to wide -> Matrix form
   base_par <- reshape(data=base_par,idvar="orig_airp",
-                      v.names = "year_2017",
+                      v.names = paste("year",year,sep = "_"),
                       timevar = "dest_airp",
                       direction="wide")
+  base_par[is.na(base_par)] <- 0 
   base_par <- base_par[,order(names(base_par))]
+  names(base_par)[-1] <- sapply(names(base_par)[-1],function(x){substr(x,11,17)})
+  return(list(base_par,share_small_airports=(n_orig_pas_sup+ n_dest_pas_sup)/total_pas))
 }
